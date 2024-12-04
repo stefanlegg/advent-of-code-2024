@@ -13,12 +13,12 @@ function parseInstructions(data: string[]): number[][] {
     const numbersRegex = /\d+/g;
     const { instructions } = data.reduce<
         { enabled: boolean; instructions: number[][] }
-    >((arr, instruction) => {
+    >((acc, instruction) => {
         if (instruction === "do()") {
-            return { enabled: true, instructions: arr.instructions };
+            return { enabled: true, instructions: acc.instructions };
         } else if (instruction === "don't()") {
-            return { enabled: false, instructions: arr.instructions };
-        } else if (arr.enabled) {
+            return { enabled: false, instructions: acc.instructions };
+        } else if (acc.enabled) {
             const matches = instruction.match(numbersRegex);
             if (matches === null) {
                 throw new Error(
@@ -26,14 +26,14 @@ function parseInstructions(data: string[]): number[][] {
                 );
             }
             return {
-                enabled: arr.enabled,
+                enabled: acc.enabled,
                 instructions: [
-                    ...arr.instructions,
+                    ...acc.instructions,
                     matches.map((input) => parseInt(input)),
                 ],
             };
         }
-        return arr;
+        return acc;
     }, { enabled: true, instructions: [] });
 
     return instructions;
@@ -41,14 +41,14 @@ function parseInstructions(data: string[]): number[][] {
 
 function multiplyValuesInOperation(data: number[][]) {
     return data.map((operation) => {
-        return operation.reduce((arr, val) => {
-            return arr * val;
+        return operation.reduce((acc, val) => {
+            return acc * val;
         }, 1);
     });
 }
 
 function addValues(data: number[]) {
-    return data.reduce((arr, val) => (arr + val), 0);
+    return data.reduce((acc, val) => (acc + val), 0);
 }
 
 async function main() {
